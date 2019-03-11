@@ -1,0 +1,105 @@
+models:
+  home:
+    type: page
+    template: home
+    hideContent: true
+    singleInstance: true
+    file: index.md
+    fields:
+      - type: string
+        name: title
+        label: Title
+        description: Page title
+        required: true
+      - type: object
+        name: banner
+        label: Banner
+        description: Home page banner
+        fields:
+					- type: text
+            name: title
+            label: Banner Title
+            required: true
+          - type: markdown
+            name: subtitle
+            label: Banner Subtitle
+					- type: list
+            name: actions
+            label: Banner Actions
+            items:
+              type: action
+              labelField: label
+      - type: list
+        name: sections
+        label: Sections
+        description: Home Sections
+        items:
+          type: reference
+          labelField: title
+          models: [features, spotlight]
+  features:
+    type: object
+    label: Features
+    labelField: title
+    fields:
+			- type: string
+        name: component
+        label: Component
+        required: true
+        hidden: true
+        default: features.html
+      - type: list
+        name: features
+        label: Features List
+        description: The list of features
+        items:
+          type: object
+          labelField: title
+          fields:
+            - type: string
+              name: title
+              label: Feature Title
+              required: true
+            - type: markdown
+              name: subtitle
+              label: Feature Subtitle
+            - type: string
+              name: icon
+              label: Feature Icon
+              description: Font Awesome Icon
+            - type: enum
+              name: icon_accent_color
+              label: Icon Accent Color
+              options: [accent1, accent2, accent3, accent4]
+  spotlight:
+    type: object
+    label: Spotlight
+    labelField: title
+    fields:
+      - type: string
+				name: title
+        label: Title
+        required: true
+        default: Spotlight Section
+      - type: markdown
+        name: subtitle
+        label: Spotlight Section Subtitle
+      - type: string
+        name: component
+        label: Component
+        required: true
+        hidden: true
+        default: spotlight.html
+  action:
+    type: object
+    label: Action 
+    labelField: title
+	  fields:
+      - type: string
+        name: label
+        label: Label
+        required: true
+      - type: string
+        name: url
+        label: URL
+        required: true
