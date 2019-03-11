@@ -1,0 +1,17 @@
+baseurl: "/"
+title: "Reflex"
+main_js: "assets/js/main.js"
+params:
+  menu:
+    actions:
+      - label: Get Started
+        url: generic.md
+        is_scrolly: false
+        is_primary: true
+      - label: Log In
+        url: generic.md
+        is_scrolly: false
+        is_primary: false
+templates:
+  title: "{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}"
+  #body_class: "is-preload"
