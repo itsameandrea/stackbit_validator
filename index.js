@@ -1,27 +1,15 @@
-const yaml = require('js-yaml')
-const fs = require('fs')
-
-function validateTheme (dirPath) {
-  try {
-    const contentModel = yaml.safeLoad(fs.readFileSync(`${dirPath}/content-model.yml`, 'utf8'))
+async function validateTheme (dirPath) {
+  const { contentModel } = await require('./files')(dirPath)
   
-    if (!contentModel) return 'content-model.yml is missing'
+  if (!contentModel) return 'content-model.yml is missing'
 
-    // for (key in contentModel.models) {
-    //   const model = contentModel.models[key]
-    //   validateModel(dirPath, key, model)
-    // }
-
-    const dataDir = fs.readdirSync(`${dirPath}/data`).forEach(file => {
-      console.log(file);
-    })
-
-  } catch (err) {
-    console.log(err)
+  for (key in contentModel.models) {
+    const model = contentModel.models[key]
+    validateModel(dirPath, key, model)
   }
 }
 
-function validateModel (dirPath, name, model) {
+async function validateModel (dirPath, name, model) {
   const type = model.type
   console.log(`===== START VALIDATION ${name} ======`)
   
@@ -34,6 +22,9 @@ function validateModel (dirPath, name, model) {
   } else if (type === 'object') {
     console.log('Checking the object configuration')
     console.log(require('./validators/object')(dirPath, model))
+  } else if (type === 'data') {
+    console.log('Checking the data configuration')
+    console.log(await require('./validators/data')(dirPath, model))
   }
 }
 
