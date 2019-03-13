@@ -243,6 +243,7 @@ models:
               required: true
               description: Font Awesome icon
             - type: string
+              required: true
               name: link_url
               label: URL
               widget: url

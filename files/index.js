@@ -20,6 +20,7 @@ module.exports = async function (dirPath) {
     return module
   }
   catch (err) {
-
+    console.log('The content model file is not formatted according to yml')
+    process.exit(1)
   }
 }
