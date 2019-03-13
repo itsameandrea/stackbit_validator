@@ -1,5 +1,6 @@
 const fs = require('fs')
 const yaml = require('js-yaml')
+const { error } = require('../debuggers')
 
 module.exports = async function (dirPath, file, allModels) {
 
@@ -13,10 +14,9 @@ module.exports = async function (dirPath, file, allModels) {
     return model.type === 'data' && model.file === file.path
   })
 
-  if (matchingModels.length !== 1)
-    return 'You must have exactly one data model matching a data file'
-  else
-    console.log('Model file matching data model')
+  if (matchingModels.length !== 1) {
+    error('You must have exactly one data model matching a data file')
+  }
 
   validateData(dirPath, file, matchingModels[0])
 }
@@ -24,26 +24,28 @@ module.exports = async function (dirPath, file, allModels) {
 function validateFields (file, fields) {
   fields.forEach(field => {
     if (field.required && !file[field.name])
-      console.log(`The ${field} field is required in the data file`)
+      error(`The ${field} field is required in the data file`)
   })
 
   for (prop in file) {
     const matchingProp = fields.find((field) => field.name === prop)
-    if (!matchingProp)
-      console.log(`${prop} should be defined in the data mdel`)
+    
+    if (!matchingProp) {
+      error(`${prop} should be defined in the data model`)
+    }
 
     const propType = typeof(file[prop])
 
     if (matchingProp.type === 'list') {
       if (!Array.isArray(file[prop])) {
-        console.log(`The type of ${prop} should match what's been defined in the data model`)
+        error(`The type of ${prop} should match what's been defined in the data model`)
       }
     } else if (matchingProp.type === 'markdown') {
       if (propType !== 'string') {
-        console.log(`The type of ${prop} should match what's been defined in the data model`)
+        error(`The type of ${prop} should match what's been defined in the data model`)
       }
     } else if (propType !== matchingProp.type) {
-      console.log(`The type of ${prop} should match what's been defined in the data model`)
+      error(`The type of ${prop} should match what's been defined in the data model`)
     }
 
     if (Array.isArray(file[prop])) {
@@ -53,11 +55,16 @@ function validateFields (file, fields) {
 }
 
 function validateData(dirPath, file, model) {
-  const parsedFile = file.name.includes('.yml')
+  try {
+    const parsedFile = file.name.includes('.yml')
     ? yaml.safeLoad(fs.readFileSync(`${dirPath}/data/${file.path}`, 'utf8'))
     : JSON.parse(fs.readFileSync(`${dirPath}/data/${file.path}`))
 
-  const fields = model.fields
+    const fields = model.fields
 
-  validateFields(parsedFile, fields)
+    validateFields(parsedFile, fields)
+  } catch (err) {
+    error('Error while fetching data files')
+    error(err.message)
+  }
 }

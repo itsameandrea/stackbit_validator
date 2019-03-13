@@ -1,15 +1,21 @@
-export default async function (dirPath) {
-  const { contentModel } = await require('./files')(dirPath)
-  const { dataFiles } = await require('./files')(dirPath)
 
-  if (!contentModel) return 'content-model.yml is missing'
+const modelValidator = require('./model')
+const { info } = require('../debuggers')
+
+module.exports = async function validateTheme (dirPath) {
+  const { contentModel } = await require('../files')(dirPath)
+  const { dataFiles } = await require('../files')(dirPath)
+
+  const dataValidator = await require('./data')
 
   for (key in contentModel.models) {
     const model = contentModel.models[key]
-    validateModel(dirPath, model, contentModel.models)
+    modelValidator(dirPath, model)
   }
 
   dataFiles.forEach(async (file) => {
-    console.log(await require('./validators/data')(dirPath, file, contentModel.models))
+    dataValidator(dirPath, file, contentModel.models)
   })
+
+  info('DONE')
 }
