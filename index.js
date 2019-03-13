@@ -1,19 +1,4 @@
-async function validateTheme (dirPath) {
-  const { contentModel } = await require('./files')(dirPath)
-  const { dataFiles } = await require('./files')(dirPath)
 
-  if (!contentModel) return 'content-model.yml is missing'
-
-  for (key in contentModel.models) {
-    const model = contentModel.models[key]
-    validateModel(dirPath, model, contentModel.models)
-  }
-
-  dataFiles.forEach(async (file) => {
-    // await require('./validators/data')(dirPath, file, contentModel.models)
-    console.log(await require('./validators/data')(dirPath, file, contentModel.models))
-  })
-}
 
 function validateModel (dirPath, model) {
   const type = model.type
